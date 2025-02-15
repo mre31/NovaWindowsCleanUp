@@ -6,25 +6,6 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Break
 }
 
-function Show-Spinner {
-    param(
-        [int]$Seconds,
-        [string]$Message
-    )
-    
-    $spinChars = "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"
-    $startTime = Get-Date
-    
-    while ((Get-Date).Subtract($startTime).TotalSeconds -lt $Seconds) {
-        foreach ($spinChar in $spinChars) {
-            Write-Host "`r$spinChar $Message" -NoNewline
-            Start-Sleep -Milliseconds 100
-        }
-    }
-    Write-Host "`r" -NoNewline
-}
-
-
 # Kaldırılacak uygulamalar listesi (tekrar edenleri temizledim)
 $uygulamalar = @(
     "Microsoft.3DBuilder"
@@ -109,8 +90,6 @@ function Remove-AppWithTimeout {
 
 # Uygulamaları kaldır
 foreach ($uygulama in $uygulamalar) {
-    Write-Host "Removing: $uygulama" -ForegroundColor Yellow
-    Show-Spinner -Seconds 2 -Message "Removing $uygulama..."
     Remove-AppWithTimeout -AppName $uygulama
 }
 
@@ -314,7 +293,7 @@ Set-WallpaperFromGithub -ImageUrl $wallpaperUrl -WallpaperStyle "Fill"
 # Explorer'ı yeniden başlat
 Write-Host "Restarting Explorer..." -ForegroundColor Yellow
 Stop-Process -Name explorer -Force
-Show-Spinner -Seconds 5 -Message "Waiting for Explorer to restart..."
+Start-Sleep -Seconds 5
 Start-Process explorer
 Write-Host "Explorer restarted." -ForegroundColor Green
 
@@ -357,13 +336,12 @@ if ($null -eq $wingetPath) {
 # Uygulamaları yüklemeye devam et
 foreach ($app in $wingetApps) {
     Write-Host "Installing $($app.display)..." -ForegroundColor Yellow
-    Show-Spinner -Seconds 1 -Message "Installing $($app.display)..."
     winget install --id $app.name -e --accept-source-agreements --accept-package-agreements --silent
     
+    # Discord yüklendikten sonra işlemi kapat
     if ($app.name -eq "Discord.Discord") {
-        Show-Spinner -Seconds 2 -Message "Configuring Discord..."
         Write-Host "Closing Discord process..." -ForegroundColor Yellow
-        Start-Sleep -Seconds 2
+        Start-Sleep -Seconds 2  # Discord'un başlaması için kısa bir bekleme
         Stop-Process -Name "Discord" -Force -ErrorAction SilentlyContinue
     }
 }
@@ -372,6 +350,6 @@ Write-Host "Application installation completed!" -ForegroundColor Green
 
 Write-Host "Restarting Explorer..." -ForegroundColor Yellow
 Stop-Process -Name explorer -Force
-Show-Spinner -Seconds 5 -Message "Waiting for Explorer to restart..."
+Start-Sleep -Seconds 5
 Start-Process explorer
 Write-Host "Explorer restarted." -ForegroundColor Green
