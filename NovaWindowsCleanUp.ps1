@@ -295,7 +295,7 @@ function Set-WallpaperFromGithub {
 }
 
 # GitHub'dan arkaplanı değiştir
-$wallpaperUrl = "https://github.com/mre31/NovaWindowsCleanUp/blob/main/wallpaper.png?raw=true"
+$wallpaperUrl = "https://raw.githubusercontent.com/mre31/NovaWindowsCleanUp/main/wallpaper.png"
 Set-WallpaperFromGithub -ImageUrl $wallpaperUrl -WallpaperStyle "Fill"
 
 
