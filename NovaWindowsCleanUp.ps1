@@ -60,7 +60,16 @@ function Remove-AppWithTimeout {
         [int]$MaxAttempts = 3,
         [int]$TimeoutSeconds = 30
     )
-
+    
+    # Uygulamanın yüklü olup olmadığını kontrol et
+    $appInstalled = Get-AppxPackage -Name $AppName -ErrorAction SilentlyContinue
+    if ($null -eq $appInstalled) {
+        Write-Host "Skipping $AppName - Not installed" -ForegroundColor Gray
+        return $true
+    }
+    
+    Write-Host "Found installed app: $AppName" -ForegroundColor Yellow
+    
     for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
         Write-Host "Removing: $AppName (Attempt $attempt of $MaxAttempts)..." -ForegroundColor Yellow
         
