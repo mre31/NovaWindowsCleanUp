@@ -149,6 +149,9 @@ New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\P
 # Windows temasını karanlık yap
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value 0 -PropertyType Dword -Force
 
+# Transparency'yi aç
+New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "EnableTransparency" -Value 1 -PropertyType DWord -Force
+
 Write-Host "System theme set to dark." -ForegroundColor Green
 
 Write-Host "`nTaskbar is being cleaned..." -ForegroundColor Cyan
@@ -295,7 +298,7 @@ function Set-WallpaperFromGithub {
 }
 
 # GitHub'dan arkaplanı değiştir
-$wallpaperUrl = "https://raw.githubusercontent.com/mre31/NovaWindowsCleanUp/main/wallpaper.png"
+$wallpaperUrl = "https://raw.githubusercontent.com/KULLANICI_ADI/REPO_ADI/main/wallpaper.jpg"
 Set-WallpaperFromGithub -ImageUrl $wallpaperUrl -WallpaperStyle "Fill"
 
 
