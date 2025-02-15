@@ -252,6 +252,23 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
 
 Write-Host "Gallery feature removed." -ForegroundColor Green
 
+
+Write-Host "`nAdding This PC icon to desktop..." -ForegroundColor Cyan
+
+# Bu Bilgisayar simgesini masaüstüne ekle
+$DesktopIcons = @{
+    Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel"
+    Name = "{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
+    Value = 0
+}
+
+if (!(Test-Path $DesktopIcons.Path)) {
+    New-Item -Path $DesktopIcons.Path -Force | Out-Null
+}
+New-ItemProperty -Path $DesktopIcons.Path -Name $DesktopIcons.Name -Value $DesktopIcons.Value -PropertyType DWord -Force
+
+Write-Host "This PC icon added to desktop." -ForegroundColor Green
+
 Write-Host "`nChanging desktop wallpaper..." -ForegroundColor Cyan
 
 # Arkaplan değiştirme fonksiyonu
@@ -352,8 +369,12 @@ foreach ($app in $wingetApps) {
     # Spotify için özel durum
     if ($app.name -eq "Spotify.Spotify") {
         Write-Host "Installing Spotify as non-admin..." -ForegroundColor Yellow
-        # Normal kullanıcı olarak çalıştır
-        Start-Process powershell -ArgumentList "winget install --id $($app.name) -e --accept-source-agreements --accept-package-agreements --silent" -Wait -Verb RunAs
+        # Yönetici olmadan çalıştır
+        $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+        if ($currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+            $arguments = "winget install --id Spotify.Spotify -e --accept-source-agreements --accept-package-agreements --silent"
+            Start-Process powershell -ArgumentList $arguments -Wait -Verb RunAs -LoadUserProfile
+        }
     } else {
         # Diğer uygulamalar için normal kurulum
         winget install --id $app.name -e --accept-source-agreements --accept-package-agreements --silent
@@ -374,19 +395,3 @@ Stop-Process -Name explorer -Force
 Start-Sleep -Seconds 5
 Start-Process explorer
 Write-Host "Explorer restarted." -ForegroundColor Green
-
-Write-Host "`nAdding This PC icon to desktop..." -ForegroundColor Cyan
-
-# Bu Bilgisayar simgesini masaüstüne ekle
-$DesktopIcons = @{
-    Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel"
-    Name = "{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
-    Value = 0
-}
-
-if (!(Test-Path $DesktopIcons.Path)) {
-    New-Item -Path $DesktopIcons.Path -Force | Out-Null
-}
-New-ItemProperty -Path $DesktopIcons.Path -Name $DesktopIcons.Name -Value $DesktopIcons.Value -PropertyType DWord -Force
-
-Write-Host "This PC icon added to desktop." -ForegroundColor Green
