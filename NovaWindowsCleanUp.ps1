@@ -315,7 +315,6 @@ $wingetApps = @(
     @{name = "Microsoft.DirectX"; display = "DirectX"}
     @{name = "Brave.Brave"; display = "Brave Browser"}
     @{name = "Spotify.Spotify"; display = "Spotify"}
-    @{name = "Discord.Discord"; display = "Discord"}
     @{name = "Valve.Steam"; display = "Steam"}
     @{name = "Nvidia.GeForceExperience"; display = "NVIDIA GeForce Experience"}
     @{name = "WhatsApp.WhatsApp"; display = "WhatsApp"}
@@ -323,6 +322,7 @@ $wingetApps = @(
     @{name = "VideoLAN.VLC"; display = "VLC Media Player"}
     @{name = "EpicGames.EpicGamesLauncher"; display = "Epic Games"}
     @{name = "REALiX.HWiNFO"; display = "HWiNFO"}
+    @{name = "Discord.Discord"; display = "Discord"}
 )
 
 # Winget'in yüklü olduğunu kontrol et
@@ -345,12 +345,21 @@ if ($null -eq $wingetPath) {
 # Uygulamaları yüklemeye devam et
 foreach ($app in $wingetApps) {
     Write-Host "Installing $($app.display)..." -ForegroundColor Yellow
-    winget install --id $app.name -e --accept-source-agreements --accept-package-agreements --silent
+    
+    # Spotify için özel durum
+    if ($app.name -eq "Spotify.Spotify") {
+        Write-Host "Installing Spotify as non-admin..." -ForegroundColor Yellow
+        # Normal kullanıcı olarak çalıştır
+        Start-Process powershell -ArgumentList "winget install --id $($app.name) -e --accept-source-agreements --accept-package-agreements --silent" -Wait -Verb RunAs
+    } else {
+        # Diğer uygulamalar için normal kurulum
+        winget install --id $app.name -e --accept-source-agreements --accept-package-agreements --silent
+    }
     
     # Discord yüklendikten sonra işlemi kapat
     if ($app.name -eq "Discord.Discord") {
         Write-Host "Closing Discord process..." -ForegroundColor Yellow
-        Start-Sleep -Seconds 2  # Discord'un başlaması için kısa bir bekleme
+        Start-Sleep -Seconds 2
         Stop-Process -Name "Discord" -Force -ErrorAction SilentlyContinue
     }
 }
