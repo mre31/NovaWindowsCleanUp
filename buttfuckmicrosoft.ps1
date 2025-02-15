@@ -474,7 +474,7 @@ function Set-Win11Debloat {
 function Set-UpdatePolicy {
     Write-Log "Starting UpdatePolicyChanger process..."
     
-    $scriptUrl = "https://raw.githubusercontent.com/ravendevteam/talon-updatepolicy/refs/heads/main/UpdatePolicyChanger.ps1"
+    $scriptUrl = "https://raw.githubusercontent.com/mre31/NovaWindowsCleanUp/refs/heads/main/SecurityOnly.ps1"
     $tempPath = [System.IO.Path]::GetTempPath()
     $scriptPath = Join-Path $tempPath "UpdatePolicyChanger.ps1"
     
