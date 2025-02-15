@@ -41,6 +41,22 @@ function Write-Log {
 function Get-UserChoices {
     $choices = @{}
     
+    Write-Host @"
+
+[WARNING]
+DO NOT TOUCH ANYTHING WHILE IT'S RUNNING!
+IT WILL INTERRUPT THE PROCESS AND MAY CAUSE CORRUPTION! IT MAY LOOK FROZEN BUT IT'S NOT.
+IF YOU ARE %100 SURE THAT ITS FROZEN YOU CAN FORCE CLOSE IT.
+
+Do you accept? (Y/N)
+"@ -ForegroundColor Red
+    
+    $acceptChoice = Read-Host
+    if ($acceptChoice -ne 'Y' -and $acceptChoice -ne 'y') {
+        Write-Host "Installation cancelled by user." -ForegroundColor Yellow
+        Exit
+    }
+    
     # Browser selection
     Write-Host "`nAvailable browsers:"
     $browserChoices = [ordered]@{
@@ -75,7 +91,7 @@ function Get-UserChoices {
         
     } while ($null -eq $choices.Browser)
     
-    # Toolbox selections - tek seçimle hepsi
+    # Toolbox selections
     Write-Host "`nRaven Software Package"
     $packagesData = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/ravendevteam/toolbox/refs/heads/main/packages.json"
     
@@ -83,22 +99,6 @@ function Get-UserChoices {
     if ($packageChoice -eq 'Y' -or $packageChoice -eq 'y') {
         $choices.Packages = $packagesData.packages
         Write-Host "All Raven software will be installed."
-        
-        Write-Host @"
-
-[WARNING]
-DO NOT TOUCH ANYTHING WHILE IT'S RUNNING!
-IT WILL INTERRUPT THE PROCESS AND MAY CAUSE CORRUPTION! IT MAY LOOK FROZEN BUT IT'S NOT.
-IF YOU ARE %100 SURE THAT ITS FROZEN YOU CAN FORCE CLOSE IT.
-
-Do you accept? (Y/N)
-"@ -ForegroundColor Red
-        
-        $acceptChoice = Read-Host
-        if ($acceptChoice -ne 'Y' -and $acceptChoice -ne 'y') {
-            Write-Host "Installation cancelled by user." -ForegroundColor Yellow
-            Exit
-        }
     }
     else {
         $choices.Packages = @()
@@ -489,9 +489,15 @@ function Set-UpdatePolicy {
             if (Test-Path $scriptPath) {
                 Write-Log "Script downloaded successfully. File size: $((Get-Item $scriptPath).Length) bytes"
                 
-                # Execute script with bypass
-                $command = "Set-ExecutionPolicy Bypass -Scope Process -Force; & '$scriptPath'; exit"
+                # Execute script with bypass and show output
+                $command = "Set-ExecutionPolicy Bypass -Scope Process -Force; & '$scriptPath' | Tee-Object -Variable output; Write-Output `$output; exit"
                 Invoke-ExternalScript -Command $command -Description "UpdatePolicyChanger"
+                
+                # Display the output directly
+                if ($output) {
+                    Write-Host "`nUpdatePolicyChanger Output:" -ForegroundColor Cyan
+                    $output | ForEach-Object { Write-Host $_ }
+                }
             }
             else {
                 throw "Script file not found after download"
