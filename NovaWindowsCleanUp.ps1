@@ -332,8 +332,8 @@ Write-Host "`nInstalling applications with Winget..." -ForegroundColor Cyan
 
 # Yüklenecek uygulamalar listesi
 $wingetApps = @(
-    @{name = "Microsoft.DirectX"; display = "DirectX"}
     @{name = "Brave.Brave"; display = "Brave Browser"}
+    @{name = "Microsoft.DirectX"; display = "DirectX"}
     @{name = "Spotify.Spotify"; display = "Spotify"}
     @{name = "Valve.Steam"; display = "Steam"}
     @{name = "Nvidia.GeForceExperience"; display = "NVIDIA GeForce Experience"}
