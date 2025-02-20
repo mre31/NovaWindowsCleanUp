@@ -62,7 +62,6 @@ Uses Winget to automatically install popular applications:
 
 ## Usage
 1. Run ```irm https://raw.githubusercontent.com/mre31/NovaWindowsCleanUp/refs/heads/main/NovaWindowsCleanUp.ps1  | iex``` with admin powershell.
-2. 
 
 ## Disclaimer
 This script makes significant changes to your Windows installation. While it's designed to be safe, it's recommended to:
