@@ -2,8 +2,6 @@
 
 ```irm https://raw.githubusercontent.com/mre31/NovaWindowsCleanUp/refs/heads/main/NovaWindowsCleanUp.ps1  | iex```
 
-# Windows 10/11 Cleanup and Setup Script
-
 A PowerShell script that automates the process of removing bloatware, customizing Windows settings, and installing essential applications on Windows 10/11 systems.
 
 ## Features
